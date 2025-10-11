@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.28;
+pragma solidity >=0.8.29;
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {ERC20Upgradeable, IERC20Metadata} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
@@ -10,10 +10,10 @@ import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import {USDfSilo} from "./USDfSilo.sol";
-import {IStakedUSDf} from "./interfaces/IStakedUSDf.sol";
+import {DSUSilo} from "./DSUSilo.sol";
+import {IDSUVault} from "./interfaces/IDSUVault.sol";
 
-contract StakedUSDf is IStakedUSDf, AccessControlUpgradeable, ERC20PermitUpgradeable, ERC4626Upgradeable {
+contract DSUVault is IDSUVault, AccessControlUpgradeable, ERC20PermitUpgradeable, ERC4626Upgradeable {
 
     using SafeERC20 for IERC20;
 
@@ -29,7 +29,7 @@ contract StakedUSDf is IStakedUSDf, AccessControlUpgradeable, ERC20PermitUpgrade
     uint40 public lastDistributionTimestamp;
     uint32 public vestingPeriod;
     uint24 public cooldownDuration;
-    USDfSilo public silo;
+    DSUSilo public silo;
 
     mapping(address => UserCooldown) public cooldowns;
     mapping(address => bool) public isRestricted;
@@ -54,9 +54,11 @@ contract StakedUSDf is IStakedUSDf, AccessControlUpgradeable, ERC20PermitUpgrade
     /* ------------- EXTERNAL FUNCTIONS ------------- */
 
     function initialize(
-        IERC20 usdf,
+        IERC20 dsu,
         address admin,
-        USDfSilo silo_,
+        string memory name,
+        string memory symbol,
+        DSUSilo silo_,
         uint32 initialVesting,
         uint24 initialCooldown
     )
@@ -64,12 +66,12 @@ contract StakedUSDf is IStakedUSDf, AccessControlUpgradeable, ERC20PermitUpgrade
         initializer
     {
         __AccessControl_init();
-        __ERC20_init("Staked Falcon USD", "sUSDf");
-        __ERC20Permit_init("Staked Falcon USD");
-        __ERC4626_init(usdf);
+        __ERC20_init(name, symbol);
+        __ERC20Permit_init(name);
+        __ERC4626_init(dsu);
 
         _checkZeroAddress(admin);
-        _checkZeroAddress(address(usdf));
+        _checkZeroAddress(address(dsu));
 
         _setVestingPeriod(initialVesting);
         _setCooldownDuration(initialCooldown);
@@ -80,7 +82,7 @@ contract StakedUSDf is IStakedUSDf, AccessControlUpgradeable, ERC20PermitUpgrade
         silo_.setStakingVault();
     }
 
-    /// @inheritdoc IStakedUSDf
+    /// @inheritdoc IDSUVault
     function setRestrictedStatus(address account, bool status) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _checkZeroAddress(account);
         require(isRestricted[account] != status, StatusNotChanged());
@@ -89,7 +91,7 @@ contract StakedUSDf is IStakedUSDf, AccessControlUpgradeable, ERC20PermitUpgrade
         emit RestrictedStatusSet(account, status);
     }
 
-    /// @inheritdoc IStakedUSDf
+    /// @inheritdoc IDSUVault
     function redistributeLockedAmount(address from, bool burnShares) external onlyRole(DEFAULT_ADMIN_ROLE) {
         // Redistribute only when `from` is restricted
         require(isRestricted[from], AddressNotRestricted(from));
@@ -98,9 +100,9 @@ contract StakedUSDf is IStakedUSDf, AccessControlUpgradeable, ERC20PermitUpgrade
         _checkZeroAmount(amountToDistribute);
 
         if (burnShares) {
-            uint256 usdfToVest = previewRedeem(amountToDistribute);
+            uint256 dsuToVest = previewRedeem(amountToDistribute);
             _burn(from, amountToDistribute);
-            _updateVestingAmount(usdfToVest);
+            _updateVestingAmount(dsuToVest);
         } else {
             _transfer(from, TREASURY, amountToDistribute);
         }
@@ -109,7 +111,7 @@ contract StakedUSDf is IStakedUSDf, AccessControlUpgradeable, ERC20PermitUpgrade
     }
 
     /* ------------- EXTERNAL FUNCTIONS ------------- */
-    /// @inheritdoc IStakedUSDf
+    /// @inheritdoc IDSUVault
     function transferInRewards(uint256 amount) external onlyRole(REWARDER_ROLE) {
         require(totalSupply() > 0, MinSharesViolation());
 
@@ -146,7 +148,7 @@ contract StakedUSDf is IStakedUSDf, AccessControlUpgradeable, ERC20PermitUpgrade
         return super.redeem(shares, receiver, owner);
     }
 
-    /// @inheritdoc IStakedUSDf
+    /// @inheritdoc IDSUVault
     function cooldownAssets(uint256 assets, address owner) external ensureCooldownOn returns (uint256 shares) {
         cooldowns[owner].cooldownEnd = uint104(block.timestamp) + cooldownDuration;
         cooldowns[owner].underlyingAmount += uint152(assets);
@@ -154,7 +156,7 @@ contract StakedUSDf is IStakedUSDf, AccessControlUpgradeable, ERC20PermitUpgrade
         shares = super.withdraw(assets, address(silo), owner);
     }
 
-    /// @inheritdoc IStakedUSDf
+    /// @inheritdoc IDSUVault
     function cooldownShares(uint256 shares, address owner) external ensureCooldownOn returns (uint256 assets) {
         assets = super.redeem(shares, address(silo), owner);
 
@@ -162,7 +164,7 @@ contract StakedUSDf is IStakedUSDf, AccessControlUpgradeable, ERC20PermitUpgrade
         cooldowns[owner].underlyingAmount += uint152(assets);
     }
 
-    /// @inheritdoc IStakedUSDf
+    /// @inheritdoc IDSUVault
     function unstake(address receiver) external {
         _checkZeroAddress(receiver);
 
@@ -177,12 +179,12 @@ contract StakedUSDf is IStakedUSDf, AccessControlUpgradeable, ERC20PermitUpgrade
         silo.withdraw(receiver, assets);
     }
 
-    /// @inheritdoc IStakedUSDf
+    /// @inheritdoc IDSUVault
     function setCooldownDuration(uint24 newDuration) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _setCooldownDuration(newDuration);
     }
 
-    /// @inheritdoc IStakedUSDf
+    /// @inheritdoc IDSUVault
     function setVestingPeriod(uint32 newPeriod) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _setVestingPeriod(newPeriod);
     }
@@ -192,7 +194,7 @@ contract StakedUSDf is IStakedUSDf, AccessControlUpgradeable, ERC20PermitUpgrade
         return IERC20(asset()).balanceOf(address(this)) - getUnvestedAmount();
     }
 
-    /// @inheritdoc IStakedUSDf
+    /// @inheritdoc IDSUVault
     function getUnvestedAmount() public view returns (uint256) {
         uint256 timeSinceLastDistribution = uint40(block.timestamp) - lastDistributionTimestamp;
         if (timeSinceLastDistribution >= vestingPeriod) {

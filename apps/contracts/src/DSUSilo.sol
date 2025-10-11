@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.28;
+pragma solidity >=0.8.29;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract USDfSilo {
+contract DSUSilo {
 
-    IERC20 private immutable _USDF;
+    IERC20 private immutable _dsu;
     address private _stakingVault;
 
     error OnlyStakingVault();
     error AlreadySet();
 
-    constructor(address usdf) {
-        _USDF = IERC20(usdf);
+    constructor(address dsu) {
+        _dsu = IERC20(dsu);
     }
 
     modifier onlyStakingVault() {
@@ -28,7 +28,7 @@ contract USDfSilo {
     }
 
     function withdraw(address to, uint256 amount) external onlyStakingVault {
-        _USDF.transfer(to, amount);
+        _dsu.transfer(to, amount);
     }
 
 }

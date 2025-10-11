@@ -1,11 +1,13 @@
 forge-std/=lib/forge-std/src/
 lib/openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/
 lib/openzeppelin-contracts/=lib/openzeppelin-contracts/
-src/StakedUSDf.sol/=src/StakedUSDf.sol/
-src/USDfSilo.sol/=src/USDfSilo.sol/
+src/DSUVault.sol/=src/DSUVault.sol/
+src/DSUSilo.sol/=src/DSUSilo.sol/
 src/interfaces/=src/interfaces/
 @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
 @openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/
+@layerzerolabs/oft-evm/contracts/=lib/LayerZero-v2/packages/layerzero-v2/evm/oapp/contracts/oft/
+@layerzerolabs/lz-evm-protocol-v2/contracts/=lib/LayerZero-v2/packages/layerzero-v2/evm/protocol/contracts/
 ds-test/=lib/openzeppelin-contracts/lib/forge-std/lib/ds-test/src/
 erc4626-tests/=lib/openzeppelin-contracts-upgradeable/lib/erc4626-tests/
 halmos-cheatcodes/=lib/openzeppelin-contracts-upgradeable/lib/halmos-cheatcodes/src/

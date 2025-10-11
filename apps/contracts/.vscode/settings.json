@@ -1,0 +1,14 @@
+{
+  "solidity.defaultCompiler": "localFile",
+  "solidity.compileUsingLocalVersion": "/usr/local/bin/forge",
+  "solidity.packageDefaultDependenciesContractsDirectory": "src",
+  "solidity.packageDefaultDependenciesDirectory": "lib",
+  "solidity.remappings": [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+    "@layerzerolabs/oft-evm/contracts/=lib/LayerZero-v2/packages/layerzero-v2/evm/oapp/contracts/oft/",
+    "@layerzerolabs/lz-evm-protocol-v2/contracts/=lib/LayerZero-v2/packages/layerzero-v2/evm/protocol/contracts/",
+    "forge-std/=lib/forge-std/src/",
+    "src/=src/"
+  ]
+}

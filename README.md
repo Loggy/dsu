@@ -35,7 +35,7 @@ This is a monorepo using pnpm workspaces containing:
 
 - Node.js (v18+)
 - PNPM (v8+)
-- PostgreSQL
+- PostgreSQLh
 
 ### Installation
 

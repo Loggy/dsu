@@ -29,5 +29,36 @@
     "*.ts": "${capture}.js, ${capture}.d.ts",
     "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts",
     "package.json": "pnpm-lock.yaml, pnpm-workspace.yaml, .npmrc, tsconfig.json, .eslintrc.js, prettier.config.js, .prettierrc.js, .gitignore, .gitattributes, .editorconfig, turbo.json"
-  }
+  },
+
+  // Solidity/Foundry settings
+  "solidity.defaultCompiler": "localFile",
+  "solidity.compileUsingLocalVersion": "/usr/local/bin/forge",
+  "solidity.packageDefaultDependenciesContractsDirectory": "src",
+  "solidity.packageDefaultDependenciesDirectory": "lib",
+  "solidity.compileUsingRemoteVersion": "v0.8.30",
+  "solidity.monoRepoSupport": true,
+  "solidity.formatter": "forge",
+  "[solidity]": {
+    "editor.defaultFormatter": "JuanBlanco.solidity"
+  },
+  "solidity.remappings": [
+    "@openzeppelin/contracts/=apps/contracts/lib/openzeppelin-contracts/contracts/",
+    "@openzeppelin/contracts-upgradeable/=apps/contracts/lib/openzeppelin-contracts-upgradeable/contracts/",
+    "@layerzerolabs/oft-evm/contracts/=apps/contracts/lib/LayerZero-v2/packages/layerzero-v2/evm/oapp/contracts/oft/",
+    "@layerzerolabs/lz-evm-protocol-v2/contracts/=apps/contracts/lib/LayerZero-v2/packages/layerzero-v2/evm/protocol/contracts/",
+    "forge-std/=apps/contracts/lib/forge-std/src/",
+    "src/interfaces/=apps/contracts/src/interfaces/",
+    "src/=apps/contracts/src/"
+  ],
+  "solidity.remappingsUnix": [
+    "@openzeppelin/contracts/=apps/contracts/lib/openzeppelin-contracts/contracts/",
+    "@openzeppelin/contracts-upgradeable/=apps/contracts/lib/openzeppelin-contracts-upgradeable/contracts/",
+    "@layerzerolabs/oft-evm/contracts/=apps/contracts/lib/LayerZero-v2/packages/layerzero-v2/evm/oapp/contracts/oft/",
+    "@layerzerolabs/lz-evm-protocol-v2/contracts/=apps/contracts/lib/LayerZero-v2/packages/layerzero-v2/evm/protocol/contracts/",
+    "forge-std/=apps/contracts/lib/forge-std/src/",
+    "src/interfaces/=apps/contracts/src/interfaces/",
+    "src/=apps/contracts/src/"
+  ],
+  "solidity.compileUsingWorker": false
 }

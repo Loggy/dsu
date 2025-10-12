@@ -35,12 +35,13 @@ This guide explains how to deploy the DSU token system using Foundry.
 
 ## Contract Overview
 
-The DSU system consists of 5 contracts deployed in a specific order:
+The DSU system consists of 6 contracts deployed in a specific order:
 
 | Contract          | Type             | Description                                                  |
 | ----------------- | ---------------- | ------------------------------------------------------------ |
 | **DSUBlacklist**  | Standard         | Access-controlled blacklist for restricting addresses        |
 | **DSU**           | UUPS Upgradeable | ERC20 token with pause, burn, mint, and permit functionality |
+| **DSUMinting**    | Standard         | Minting/redeeming DSU with collateral (WETH, USDC, etc.)     |
 | **DSUOFTAdapter** | Standard         | LayerZero OFT adapter for cross-chain transfers              |
 | **DSUSilo**       | Standard         | Holds DSU during cooldown periods                            |
 | **DSUVault**      | UUPS Upgradeable | ERC4626 vault for staking DSU with rewards                   |
@@ -68,11 +69,15 @@ The deployment script (`script/Deploy.s.sol`) deploys contracts in this order:
    ↓
 2. DSU (Implementation + Proxy)
    ↓
-3. DSUOFTAdapter (uses DSU proxy)
+3. DSUMinting (uses DSU proxy, WETH, collateral)
    ↓
-4. DSUSilo (uses DSU proxy)
+4. Grant MINTER_ROLE to DSUMinting
    ↓
-5. DSUVault (Implementation + Proxy, uses DSU proxy and Silo)
+5. DSUOFTAdapter (uses DSU proxy)
+   ↓
+6. DSUSilo (uses DSU proxy)
+   ↓
+7. DSUVault (Implementation + Proxy, uses DSU proxy and Silo)
 ```
 
 ## Setup Instructions
@@ -93,6 +98,7 @@ PRIVATE_KEY=your_deployer_private_key
 ADMIN_ADDRESS=0x...
 TREASURY_ADDRESS=0x...
 LAYERZERO_ENDPOINT=0x...
+WETH_ADDRESS=0x...  # See addresses below
 
 # Optional (defaults to ADMIN_ADDRESS)
 PAUSER_ADDRESS=0x...
@@ -100,7 +106,15 @@ MINTER_ADDRESS=0x...
 UPGRADER_ADDRESS=0x...
 REWARDER_ADDRESS=0x...
 
-# Optional Configuration
+# Optional DSUMinting Configuration
+COLLATERAL_ASSETS='["0x...","0x..."]'  # JSON array of collateral tokens
+CUSTODIAN_ADDRESSES='["0x..."]'         # JSON array of custodian addresses
+GLOBAL_MAX_MINT_PER_BLOCK=100000000000000000000000   # 100k DSU
+GLOBAL_MAX_REDEEM_PER_BLOCK=100000000000000000000000 # 100k DSU
+MAX_MINT_PER_BLOCK=50000000000000000000000           # 50k DSU per asset
+MAX_REDEEM_PER_BLOCK=50000000000000000000000         # 50k DSU per asset
+
+# Optional Vault Configuration
 INITIAL_VESTING_PERIOD=604800  # 7 days in seconds
 INITIAL_COOLDOWN_DURATION=0    # 0 = disabled
 
@@ -110,6 +124,19 @@ SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_API_KEY
 # For verification
 ETHERSCAN_API_KEY=your_etherscan_api_key
 ```
+
+### WETH Addresses by Network
+
+**Mainnets:**
+
+- Ethereum: `0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2`
+- Arbitrum: `0x82aF49447D8a07e3bd95BD0d56f35241523fBab1`
+- Optimism: `0x4200000000000000000000000000000000000006`
+
+**Testnets:**
+
+- Sepolia: `0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9`
+- Arbitrum Sepolia: `0x980B62Da83eFf3D4576C647993b0c1D7faf17c73`
 
 ### 2. LayerZero Endpoint Addresses
 
@@ -239,6 +266,7 @@ The script outputs all deployed addresses. Save them for reference:
   "DSUBlacklist": "0x...",
   "DSU_Implementation": "0x...",
   "DSU_Proxy": "0x...",
+  "DSUMinting": "0x...",
   "DSUOFTAdapter": "0x...",
   "DSUSilo": "0x...",
   "DSUVault_Implementation": "0x...",

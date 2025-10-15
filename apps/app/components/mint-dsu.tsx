@@ -83,18 +83,21 @@ export function MintDSU() {
   const isFormValid = recipientAddress && amount && parseFloat(amount) > 0;
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6 space-y-6">
-      <div className="bg-card rounded-lg shadow-lg border border-border p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Mint DSU Tokens</h2>
-          <ConnectButton />
-        </div>
-
-        {!address ? (
-          <div className="text-center py-8 text-muted-foreground">
-            Please connect your wallet to mint DSU tokens
+    <div className="w-full space-y-6">
+      {!address ? (
+        <div className="bg-card rounded-xl border border-border p-12 text-center">
+          <div className="max-w-md mx-auto space-y-4">
+            <h2 className="text-2xl font-semibold">Connect Your Wallet</h2>
+            <p className="text-muted-foreground">
+              Connect your wallet to mint DSU tokens
+            </p>
+            <div className="flex justify-center pt-4">
+              <ConnectButton />
+            </div>
           </div>
-        ) : (
+        </div>
+      ) : (
+        <div className="bg-card rounded-xl shadow-lg border border-border p-8">
           <>
             {/* Network Info */}
             <div className="bg-muted/50 rounded-lg p-4 mb-6">
@@ -240,8 +243,8 @@ export function MintDSU() {
               </p>
             </div>
           </>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

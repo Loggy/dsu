@@ -1,6 +1,6 @@
-# DSU Minting Interface
+# DSU DApp
 
-A modern web interface for minting DSU (Decentralized Stable Unit) tokens on Ethereum networks.
+A comprehensive web3 application for managing DSU (Decentralized Stable Unit) tokens on Ethereum networks.
 
 ## 🚀 Quick Start
 
@@ -28,12 +28,35 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ## Features
 
+### 🏦 Portfolio Dashboard
+
+- View total DSU holdings (wallet + staked)
+- Track wallet and staked balances separately
+- Quick access CTAs to Mint and Earn pages
+- Network and contract information display
+
+### 💰 Earn & Stake
+
+- Stake DSU tokens into ERC4626 vault
+- Unstake tokens with automatic cooldown handling
+- View vault statistics and personal positions
+- Automatic approval flow for staking
+- Real-time balance updates
+
+### 🪙 Mint Tokens
+
+- Mint DSU tokens to any address (requires MINTER_ROLE)
+- Transaction tracking and status updates
+- Balance and total supply monitoring
+
+### 🎨 Modern UI/UX
+
 - ✅ **Multi-Network Support** - Anvil Local, Sepolia, Mainnet
 - ✅ **Wallet Connection** - MetaMask, WalletConnect, Coinbase Wallet, and more
 - ✅ **Real-time Updates** - Live balance and transaction tracking
-- ✅ **Beautiful UI** - Modern, responsive design with dark mode
+- ✅ **Beautiful UI** - Modern, responsive design with dark/light mode
 - ✅ **Type-Safe** - Full TypeScript support with Viem
-- ✅ **Network Detection** - Automatic contract address switching
+- ✅ **Mobile First** - Fully responsive design
 
 ## Tech Stack
 
@@ -46,28 +69,49 @@ Open [http://localhost:3000](http://localhost:3000)
 | TanStack Query | Data fetching & caching     | 5.x     |
 | Tailwind CSS   | Styling                     | 3.4     |
 
+## Application Structure
+
+```
+/                    → Redirects to /portfolio
+/portfolio          → Main dashboard with balances and CTAs
+/earn               → Staking interface (stake/unstake)
+/mint               → Token minting (requires MINTER_ROLE)
+```
+
 ## Documentation
 
-- **[GETTING_STARTED.md](./GETTING_STARTED.md)** - Setup and first-time usage
-- **[MINTING_INTERFACE.md](./MINTING_INTERFACE.md)** - Complete feature documentation
-- **[ENV_SETUP.md](./ENV_SETUP.md)** - Environment variable configuration
+- **[DAPP_STRUCTURE.md](./docs/DAPP_STRUCTURE.md)** - Complete app architecture guide
+- **[GETTING_STARTED.md](./docs/GETTING_STARTED.md)** - Setup and first-time usage
+- **[MINTING_INTERFACE.md](./docs/MINTING_INTERFACE.md)** - Complete feature documentation
+- **[ENV_SETUP.md](./docs/ENV_SETUP.md)** - Environment variable configuration
 
 ## Project Structure
 
 ```
 apps/app/
 ├── app/                      # Next.js App Router
+│   ├── portfolio/           # Portfolio page
+│   │   └── page.tsx
+│   ├── earn/                # Staking page
+│   │   └── page.tsx
+│   ├── mint/                # Minting page
+│   │   └── page.tsx
 │   ├── layout.tsx           # Root layout with providers
-│   ├── page.tsx             # Main minting page
+│   ├── page.tsx             # Root redirect to portfolio
 │   └── globals.css          # Global styles & Tailwind
 │
 ├── components/              # React components
+│   ├── header.tsx           # App header with nav
+│   ├── app-layout.tsx       # Shared layout wrapper
 │   ├── providers.tsx        # Wagmi & RainbowKit setup
-│   └── mint-dsu.tsx         # Main minting interface
+│   └── mint-dsu.tsx         # Minting component
 │
 ├── lib/                     # Core configuration
 │   ├── wagmi.ts            # Network & wagmi config
 │   └── contracts.ts        # ABIs & contract addresses
+│
+├── docs/                    # Documentation
+│   └── DAPP_STRUCTURE.md   # App architecture
 │
 └── .env.local              # Your environment config (gitignored)
 ```
@@ -242,15 +286,24 @@ See [GETTING_STARTED.md](./GETTING_STARTED.md#common-issues) for detailed troubl
 - Customize in `globals.css` and component files
 - Theme configured in `tailwind.config.js`
 
-### Additional Features
+### Smart Contracts
 
-Consider adding:
+The app integrates with two main contracts:
+
+1. **DSU Token (ERC20)**: Standard token with minting capabilities
+2. **DSU Vault (ERC4626)**: Staking vault for earning rewards
+
+Contract addresses configured in `lib/contracts.ts` for each network.
+
+### Additional Features to Consider
 
 - Burn tokens functionality
-- Transfer interface
-- Approval management
+- Direct transfer interface
+- Approval management dashboard
 - Transaction history
 - Batch operations
+- Governance features
+- Analytics dashboard
 
 ## Development
 

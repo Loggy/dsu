@@ -1,17 +1,7 @@
-/* Import shared base styles - that's it! */
+/* Import shared base styles */
 @import '@dsu/tailwind-config/base.css';
 
-@layer base {
-  /* Dashboard uses CSS variable colors for theming */
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
-
-  *:focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2;
-  }
+/* Additional app-specific styles */
+body {
+  @apply bg-background text-foreground;
 }

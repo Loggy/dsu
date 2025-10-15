@@ -19,6 +19,28 @@ fi
 echo "✓ Anvil is running"
 echo ""
 
+# Get the deployer address from environment or use default
+DEPLOYER_ADDRESS=${DEPLOYER_ADDRESS:-0x993C6973716DC2247557595FBd5cf1087595578C}
+
+# Check deployer balance
+echo "Checking deployer balance..."
+BALANCE=$(cast balance $DEPLOYER_ADDRESS --rpc-url http://127.0.0.1:8545)
+
+# If balance is less than 0.1 ETH, fund the account
+if [ "$BALANCE" -lt "100000000000000000" ]; then
+    echo "  Deployer has insufficient funds. Funding account..."
+    cast send $DEPLOYER_ADDRESS \
+      --value 1ether \
+      --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
+      --rpc-url http://127.0.0.1:8545 \
+      --chain 31337 \
+      > /dev/null 2>&1
+    echo "  ✓ Funded deployer with 1 ETH"
+else
+    echo "  ✓ Deployer has sufficient funds"
+fi
+echo ""
+
 echo "Deploying all contracts..."
 echo ""
 
